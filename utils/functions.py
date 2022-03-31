@@ -94,14 +94,14 @@ def save_as_json():
     trie.form_json()
 
 
-def get_movies_from_keywords(words, count=10, movies=True):
+def get_movies_from_keywords(words, count=10, getMovies=True):
     word_list = words.split(",")
     query_doc_bow = dictionary.doc2bow(word_list)
     query_doc_tfidf = tfidf[query_doc_bow]
 
     sim_arr = sims[query_doc_tfidf]
 
-    if movies:
+    if getMovies:
         sim_scores = dict(zip(movies.index.values, sim_arr))
 
         movie_ids = sorted(sim_scores, key=lambda x: sim_scores[x], reverse=True)
