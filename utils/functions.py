@@ -69,7 +69,7 @@ def get_movies(ids, dropRows=['data', 'keywords', 'tmdb']):
 def get_movie(movie_id, dropRows=['data', 'keywords', 'tmdb']):
     res = movies.loc[movie_id]
     
-    res = res.drop(dropRows, axis=1)
+    res = res.drop(dropRows)
 
     res = res.to_dict()
 
