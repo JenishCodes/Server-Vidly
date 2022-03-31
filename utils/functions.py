@@ -33,7 +33,7 @@ def get_recommendations(history):
     
     for h in history:
         keywords = movies.loc[h].data
-        scores = np.add(scores, get_movies_from_keywords(keywords, movies=False))
+        scores = np.add(scores, get_movies_from_keywords(keywords, getMovies=False))
         
     scores = scores / len(history)
     indexes = movies.index.values.tolist()
@@ -46,26 +46,30 @@ def get_recommendations(history):
         sorted_indexes.pop(index)
         sorted_scores.pop(index)
     
-    top_movies = get_movies(sorted_indexes[:100])
+    top_movies = get_movies(sorted_indexes[:50])
     
-    for i in range(100):
+    for i in range(50):
         top_movies[i]['score'] = sorted_scores[i]
 
     return top_movies
 
 
-def get_movies(ids):
+def get_movies(ids, dropRows=['data', 'keywords', 'tmdb']):
     res = movies.loc[ids]
 
     res['id'] = ids
+    
+    res = res.drop(dropRows, axis=1)
 
     res = res.to_dict('records')
 
     return res
 
 
-def get_movie(movie_id):
+def get_movie(movie_id, dropRows=['data', 'keywords', 'tmdb']):
     res = movies.loc[movie_id]
+    
+    res = res.drop(dropRows, axis=1)
 
     res = res.to_dict()
 
@@ -74,12 +78,12 @@ def get_movie(movie_id):
     return res
 
 
-def get_suggestions(key):
+def get_suggestions(key, count=5):
     ids = trie.get_auto_suggestions(key)
 
     sorted_ids = sorted(ids, key=lambda x: ids[x], reverse=True)
 
-    res = get_movies(sorted_ids)
+    res = get_movies(sorted_ids[:count], ['data', 'keywords', 'tmdb', 'backdrop', 'description', 'trailer', 'duration', 'genres', 'link'])
 
     return res
 

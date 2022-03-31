@@ -8,6 +8,15 @@ from utils.functions import *
 app = Flask(__name__)  # Initialize App
 
 # Routes
+@app.route("/")
+def checkServer():
+    try:
+        return jsonify({"success": True, "error": None, "data": "Server running properly"}), 200
+    except Exception as err:
+        print(err)
+        return jsonify({"success": False, "error": "Internal Server Error"}), 400
+    
+
 @app.route("/user/interest", methods=['POST'])
 def getUserInterest():
     try:
@@ -20,6 +29,18 @@ def getUserInterest():
         print(err)
         return jsonify({"success": False, "error": "Internal Server Error"}), 400
 
+
+@app.route("/movie/all", methods=["POST"])
+def getMovies():
+    try:
+        req_data = request.get_json()
+        
+        res = get_movies(req_data['movies'])
+        
+        return jsonify({"success": True, "error": None, "data": res}), 200
+    except Exception as err:
+        print(err)
+        return jsonify({"success": False, "error": "Internal Server Error"}), 400
 
 @app.route("/movie")
 def getMovie():
@@ -37,7 +58,7 @@ def getSuggestions():
     try:
         res = get_suggestions(request.args["key"])
 
-        return jsonify({"success": True, "error": None, "data": res[:30]}), 200
+        return jsonify({"success": True, "error": None, "data": res}), 200
     except Exception as err:
         print(err)
         return jsonify({"success": False, "error": "Internal Server Error"}), 400
@@ -110,4 +131,4 @@ def addHeaders(response):
 
 # Main Function
 if __name__ == "__main__":
-    app.run(debug=False)  # Start App
+    app.run(debug=True)  # Start App
