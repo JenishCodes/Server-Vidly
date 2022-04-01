@@ -67,7 +67,7 @@ def get_movies(ids, dropRows=[]):
     return res
 
 
-def get_suggestions(key, count=5):
+def get_suggestions(key, count):
     ids = trie.get_auto_suggestions(key)
 
     sorted_ids = sorted(ids, key=lambda x: ids[x], reverse=True)

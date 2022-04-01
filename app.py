@@ -38,7 +38,7 @@ def moviesFunc():
 @app.route("/suggestions", methods=["GET", "PATCH"])
 def suggestions():
     if request.method == "GET":
-        res = get_suggestions(request.args["key"])
+        res = get_suggestions(request.args["key"], request.args["count"])
 
         return jsonify({"success": True, "error": None, "data": res}), 200
     elif request.method == "PATCH":
