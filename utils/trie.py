@@ -11,6 +11,7 @@ class TrieNode:
 
 class Trie:
     def __init__(self):
+        self.count = 0
         self.root = TrieNode()
         self.suggestions = {}
         self.dictionary = {}
@@ -71,6 +72,12 @@ class Trie:
             node = node.children[a]
 
         self.find_rec(node, movie_id)
+        
+        self.count += 1
+        
+        if self.count == 100:
+            self.form_json()
+            self.count = 0
 
     def suggestion_rec(self, node):
         if node.last:

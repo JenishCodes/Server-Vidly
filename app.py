@@ -1,6 +1,5 @@
 # Import Packages
-import os
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, json
 
 # Import Utils Functions
 from utils.functions import *
@@ -10,125 +9,101 @@ app = Flask(__name__)  # Initialize App
 # Routes
 @app.route("/")
 def checkServer():
-    try:
-        return jsonify({"success": True, "error": None, "data": "Server running properly"}), 200
-    except Exception as err:
-        print(err)
-        return jsonify({"success": False, "error": "Internal Server Error"}), 400
+    return jsonify({"success": True, "error": None, "data": "Server running properly"}), 200
     
 
-@app.route("/user/interest", methods=['POST'])
+@app.route("/user/interest", methods=['PATCH'])
 def getUserInterest():
-    try:
-        req_data = request.get_json()
+    req_data = json.loads(request.data)
         
-        res = get_recommendations(req_data['history'])
+    res = get_recommendations(req_data['history'])
+
+    return jsonify({"success": True, "error": None, "data": res}), 200
+
+
+@app.route("/movie", methods=["GET", "PATCH"])
+def moviesFunc():
+    if request.method == "GET":
+        res = get_movies([request.args["id"]], dropRows=['keywords'])[0]
 
         return jsonify({"success": True, "error": None, "data": res}), 200
-    except Exception as err:
-        print(err)
-        return jsonify({"success": False, "error": "Internal Server Error"}), 400
-
-
-@app.route("/movie/all", methods=["POST"])
-def getMovies():
-    try:
-        req_data = request.get_json()
+    elif request.method == "PATCH":
+        req_data = json.loads(request.data)
         
-        res = get_movies(req_data['movies'])
-        
+        res = get_movies(req_data['movies'], dropRows=['keywords'])
+            
         return jsonify({"success": True, "error": None, "data": res}), 200
-    except Exception as err:
-        print(err)
-        return jsonify({"success": False, "error": "Internal Server Error"}), 400
-
-@app.route("/movie")
-def getMovie():
-    try:
-        res = get_movie(request.args["id"])
-
-        return jsonify({"success": True, "error": None, "data": res}), 200
-    except Exception as err:
-        print(err)
-        return jsonify({"success": False, "error": "Internal Server Error"}), 400
 
 
-@app.route("/movie/suggestions")
-def getSuggestions():
-    try:
+@app.route("/suggestions", methods=["GET", "PATCH"])
+def suggestions():
+    if request.method == "GET":
         res = get_suggestions(request.args["key"])
 
         return jsonify({"success": True, "error": None, "data": res}), 200
-    except Exception as err:
-        print(err)
-        return jsonify({"success": False, "error": "Internal Server Error"}), 400
-
-
-@app.route("/movie/score", methods=["POST"])
-def increaseMovieScore():
-    try:
-        increase_movie_score(request.args["key"], request.args["id"])
+    elif request.method == "PATCH":
+        req_data = json.loads(request.data)
+        
+        increase_movie_score(req_data["key"], req_data["id"])
 
         return jsonify({"success": True, "error": None}), 200
-    except Exception as err:
-        print(err)
-        return jsonify({"success": False, "error": "Internal Server Error"}), 400
 
 
-@app.route("/movie/id/recommendations")
+@app.route("/recommendations/id")
 def idRecommendations():
-    try:
-        movie = get_movie(request.args["id"])
-        ids = get_movies_from_keywords(movie["keywords"])
+    movie = get_movies([request.args["movie_id"]])[0]
+    
+    ids = get_movies_from_keywords(movie["keywords"])
 
-        res = get_movies(ids[1:])
+    res = get_movies(ids[1:], dropRows=['keywords'])
 
-        return jsonify({"success": True, "error": None, "data": res}), 200
-    except Exception as err:
-        print(err)
-        return jsonify({"success": False, "error": "Internal Server Error"}), 400
+    return jsonify({"success": True, "error": None, "data": res}), 200
 
 
-@app.route("/movie/keywords/recommendations")
+@app.route("/recommendations/keywords")
 def keywordRecommendations():
-    try:
-        ids = get_movies_from_keywords(request.args["words"])
+    ids = get_movies_from_keywords(request.args["words"])
 
-        res = get_movies(ids)
+    res = get_movies(ids, dropRows=['keywords'])
 
-        return jsonify({"success": True, "error": None, "data": res}), 200
-    except Exception as err:
-        print(err)
-        return jsonify({"success": False, "error": "Internal Server Error"}), 400
+    return jsonify({"success": True, "error": None, "data": res}), 200
 
 
-# Required Extra Routes
-@app.route("/favicon.ico")
-def favicon():
+@app.route("/prefixes/save")
+def savePrefixes():
+    save_as_json()
+    
+    return jsonify({"success": True, "error": None, "data": "Prefixes Saved"}), 200
+    
+    
+@app.route("/prefixes/download")
+def downloadPrefixes():
     return send_from_directory(
-        app.root_path, "data/favicon.ico", mimetype="image/vnd.microsoft.icon"
+        app.root_path, "data/prefixes.json", as_attachment=True
     )
 
 
-@app.route("/shutdown")
-def shutdown():
-    func = request.environ.get("werkzeug.server.shutdown")
-    if func is None:
-        raise RuntimeError("Not running with the Werkzeug Server")
+@app.errorhandler(Exception)
+def handleException(err):
+    return jsonify({"success": False, "error": str(err)}), err.code if hasattr(err, 'code') else 500
 
-    save_as_json()
-    func()
-    return "Data Saved."
+
+@app.route("/favicon.ico")
+def favicon():
+    return send_from_directory(
+        app.root_path, "favicon.ico", mimetype="image/vnd.microsoft.icon"
+    )
 
 
 @app.after_request
 def addHeaders(response):
     header = response.headers
     header["Access-Control-Allow-Origin"] = "*"
-
+    header["Access-Control-Allow-Methods"] = "*"
+    
     return response
 
 
 # Main Function
-if __name__ == "__main__":
+if __name__ == "__main__":    
     app.run(debug=True)  # Start App

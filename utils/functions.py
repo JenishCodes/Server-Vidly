@@ -46,7 +46,7 @@ def get_recommendations(history):
         sorted_indexes.pop(index)
         sorted_scores.pop(index)
     
-    top_movies = get_movies(sorted_indexes[:50])
+    top_movies = get_movies(sorted_indexes[:50], dropRows=['keywords'])
     
     for i in range(50):
         top_movies[i]['score'] = sorted_scores[i]
@@ -54,26 +54,15 @@ def get_recommendations(history):
     return top_movies
 
 
-def get_movies(ids, dropRows=['data', 'keywords', 'tmdb']):
+def get_movies(ids, dropRows=[]):
     res = movies.loc[ids]
 
     res['id'] = ids
     
+    res = res.drop(['data', 'tmdb'], axis=1)
     res = res.drop(dropRows, axis=1)
 
     res = res.to_dict('records')
-
-    return res
-
-
-def get_movie(movie_id, dropRows=['data', 'keywords', 'tmdb']):
-    res = movies.loc[movie_id]
-    
-    res = res.drop(dropRows)
-
-    res = res.to_dict()
-
-    res['id'] = movie_id
 
     return res
 
@@ -83,7 +72,7 @@ def get_suggestions(key, count=5):
 
     sorted_ids = sorted(ids, key=lambda x: ids[x], reverse=True)
 
-    res = get_movies(sorted_ids[:count], ['data', 'keywords', 'tmdb', 'backdrop', 'description', 'trailer', 'duration', 'genres', 'link'])
+    res = get_movies(sorted_ids[:count], ['keywords', 'backdrop', 'description', 'trailer', 'duration', 'genres', 'link'])
 
     return res
 
