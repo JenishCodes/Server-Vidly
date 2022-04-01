@@ -106,4 +106,4 @@ def addHeaders(response):
 
 # Main Function
 if __name__ == "__main__":    
-    app.run(debug=True)  # Start App
+    app.run(debug=False)  # Start App
