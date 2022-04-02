@@ -35,7 +35,7 @@ def get_recommendations(history):
         keywords = movies.loc[h].data
         scores = np.add(scores, get_movies_from_keywords(keywords, getMovies=False))
         
-    scores = scores / len(history)
+    scores = (scores - scores.min()) / (scores.max() - scores.min())
     indexes = movies.index.values.tolist()
 
     sorted_indexes = sorted(indexes, key=lambda x: scores[indexes.index(x)], reverse=True)
