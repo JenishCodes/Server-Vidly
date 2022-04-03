@@ -72,7 +72,7 @@ def get_suggestions(key, count):
 
     sorted_ids = sorted(ids, key=lambda x: ids[x], reverse=True)
 
-    res = get_movies(sorted_ids[:count], ['keywords', 'backdrop', 'description', 'trailer', 'duration', 'genres', 'link'])
+    res = get_movies(sorted_ids[:count], ['keywords', 'backdrop', 'description', 'trailer', 'genres', 'link'])
 
     return res
 
