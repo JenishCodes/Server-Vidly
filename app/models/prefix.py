@@ -28,6 +28,12 @@ class Prefix(db.Model):
 
         return movies
 
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+        return self
+
 
 class PrefixMovie(db.Model):
     __tablename__ = "prefix_movie"
@@ -53,3 +59,9 @@ class PrefixMovie(db.Model):
 
         prefix_movie.score += score
         db.session.commit()
+    
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+        return self

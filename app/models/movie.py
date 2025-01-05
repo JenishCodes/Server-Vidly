@@ -46,6 +46,12 @@ class Movie(db.Model):
         data = Movie.query.order_by(Movie.id).with_entities(Movie.data).all()
         return [d[0] for d in data]
 
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+        return self
+
     def to_dict(self):
         return {
             "id": self.id,

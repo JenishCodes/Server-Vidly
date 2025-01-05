@@ -6,8 +6,7 @@ from dotenv import load_dotenv
 
 class Config:
     # Load environment variables
-    if os.getenv("FLASK_ENV") == None:
-        load_dotenv()
+    load_dotenv()
 
     # Application configuration
     FLASK_ENV = os.getenv("FLASK_ENV")

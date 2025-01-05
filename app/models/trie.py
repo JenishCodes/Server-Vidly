@@ -16,8 +16,11 @@ class Trie:
 
     def __init__(self):
         is_built = redis_client.get(Trie.root_id)
-        if not is_built:
-            self.build_trie()
+        if is_built:
+            return print("Trie already built!")
+        
+        self.build_trie()
+        print("Trie built successfully!")
 
     def build_trie(self):
         redis_client.set(Trie.root_id, 1)

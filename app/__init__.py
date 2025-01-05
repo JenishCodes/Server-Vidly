@@ -27,6 +27,11 @@ def create_app():
 
 
 def load_app_modules(app):
+    # Load data into database
+    from app.models import load_data
+
+    load_data()
+
     # Configure Redis
     from app.redis import configure_redis
 

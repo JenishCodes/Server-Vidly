@@ -18,6 +18,8 @@ class Recommender:
         self.vectorizer = TfidfVectorizer()
         self.tfidf = self.vectorizer.fit_transform(data)
 
+        print("Recommender loaded successfully!")
+
     def get_similar_movies(self, words, limit):
         query_vector = self.vectorizer.transform([words])
 
