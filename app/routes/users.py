@@ -3,65 +3,6 @@ from flask import jsonify, request
 from app.models import User, Movie, Watchlist, Watched, recommender
 
 
-def signup():
-    data = request.get_json()
-
-    name = data.get("name")
-    email = data.get("email")
-    password = data.get("password")
-
-    if not name or not email or not password:
-        return jsonify({"error": "name, email and password are required"}), 400
-
-    existing_user = User.get_user_by_email(email)
-    if existing_user:
-        return jsonify({"error": "Email already in use"}), 400
-
-    new_user = User(name=name, email=email)
-    new_user.hash_password(password)
-
-    new_user.save()
-
-    return (
-        jsonify(
-            {
-                "message": "Signed up successfully",
-                "token": new_user.get_token(),
-                "error": None,
-            }
-        ),
-        200,
-    )
-
-
-def signin():
-    data = request.get_json()
-
-    email = data.get("email")
-    password = data.get("password")
-
-    if not email or not password:
-        return jsonify({"error": "email and password are required"}), 400
-
-    user = User.get_user_by_email(email)
-    if not user:
-        return jsonify({"error": "User not found"}), 404
-
-    if not user.check_password(password):
-        return jsonify({"error": "Invalid password"}), 400
-
-    return (
-        jsonify(
-            {
-                "message": "Signed in successfully",
-                "token": user.get_token(),
-                "error": None,
-            }
-        ),
-        200,
-    )
-
-
 def get_user():
     user = User.query.get(request.user)
 

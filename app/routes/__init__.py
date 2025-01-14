@@ -4,7 +4,7 @@ from functools import wraps
 from flask import Blueprint
 
 from app.jwt import token_required
-from app.routes import users, movies
+from app.routes import users, movies, auths
 
 
 # Initialize the Blueprint for user-related users
@@ -32,8 +32,10 @@ main.add_url_rule("/", view_func=lambda: "Welcome to the Movie API", methods=["G
 
 
 # Register each route to the auth blueprint
-auth.add_url_rule("/signup", view_func=handle_exception(users.signup), methods=["POST"])
-auth.add_url_rule("/signin", view_func=handle_exception(users.signin), methods=["POST"])
+auth.add_url_rule("/signup", view_func=handle_exception(auths.signup), methods=["POST"])
+auth.add_url_rule("/signin", view_func=handle_exception(auths.signin), methods=["POST"])
+auth.add_url_rule("/otp", view_func=handle_exception(auths.send_otp), methods=["POST"])
+auth.add_url_rule("/password", view_func=handle_exception(auths.change_password), methods=["POST"])
 
 
 # Register each route to the user blueprint

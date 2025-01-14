@@ -37,6 +37,11 @@ def load_app_modules(app):
 
     configure_redis(app)
 
+    # Configure Mail
+    from app.mailer import Mailer
+    
+    Mailer(app) 
+
     # Load models
     from app import models
 
