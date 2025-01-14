@@ -61,9 +61,9 @@ def load_app_modules(app):
 
 
 def greceful_shutdown(_, __):
-    from app.consumer import Consumer
+    # from app.consumer import Consumer
 
-    Consumer().shutdown()
+    # Consumer().shutdown()
 
     print("Shutting down app...")
     exit(0)
