@@ -44,12 +44,12 @@ def load_app_modules(app):
     models.build_trie()
 
     # Start Kafka consumer
-    from app.consumer import Consumer
+    # from app.consumer import Consumer
 
-    consumer = Consumer()
-    start_consumer_ctx = lambda: consumer.start_consumer(app.app_context)
+    # consumer = Consumer()
+    # start_consumer_ctx = lambda: consumer.start_consumer(app.app_context)
 
-    Thread(target=start_consumer_ctx, daemon=True).start()
+    # Thread(target=start_consumer_ctx, daemon=True).start()
 
     # Register routes
     from app.routes import main, auth, user, movie

@@ -71,8 +71,8 @@ class Trie:
         )
 
         pending_node_count = redis_client.incr("trie:pending_node_count")
-        if pending_node_count >= Config.REDIS_PENDING_NODE_THRESHOLD:
-            Topic.UPDATE_SEARCH_SCORE.publish(None)
+        # if pending_node_count >= Config.REDIS_PENDING_NODE_THRESHOLD:
+            # Topic.UPDATE_SEARCH_SCORE.publish(None)
 
     def increment_search_count(self, prefix, movie_id):
         node_id = 0
